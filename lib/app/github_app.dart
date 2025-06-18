@@ -9,11 +9,7 @@ class GithubApp extends StatelessWidget {
     return MaterialApp(
       title: 'Github Trends',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          // seedColor: Colors.white,
-          seedColor: Colors.black,
-          // primary: Colors.black,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
       ),
       home: HomeScreen(),
     );

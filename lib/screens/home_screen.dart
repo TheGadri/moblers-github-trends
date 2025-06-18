@@ -26,24 +26,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Github Trends')),
-      body: Scaffold(
-        body: IndexedStack(index: _selectedIndex, children: _widgetOptions),
-        bottomNavigationBar: BottomNavigationBar(
-          // For navigation to favorites
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.trending_up),
-              label: 'Trending',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: 'Favorites',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-        ),
+      body: IndexedStack(index: _selectedIndex, children: _widgetOptions),
+      bottomNavigationBar: BottomNavigationBar(
+        // For navigation to favorites
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.trending_up),
+            label: 'Trending',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Favorites',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
