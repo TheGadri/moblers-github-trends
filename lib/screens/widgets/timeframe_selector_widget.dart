@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-
-enum Timeframe { day, week, month }
+import 'package:moblers_github_trends/utils/enums.dart';
 
 class TimeframeSelectorWidget extends StatefulWidget {
-  const TimeframeSelectorWidget({super.key, required this.onTimeframeChanged});
+  const TimeframeSelectorWidget({
+    super.key,
+    required this.onTimeframeChanged,
+    required this.initialTimeframe,
+  });
 
   final Function(Timeframe timeframe)? onTimeframeChanged;
+  final Timeframe initialTimeframe;
 
   @override
   State<TimeframeSelectorWidget> createState() =>
@@ -13,7 +17,7 @@ class TimeframeSelectorWidget extends StatefulWidget {
 }
 
 class _TimeframeSelectorWidgetState extends State<TimeframeSelectorWidget> {
-  Timeframe timeframeView = Timeframe.day;
+  late Timeframe timeframeView = widget.initialTimeframe;
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +42,6 @@ class _TimeframeSelectorWidgetState extends State<TimeframeSelectorWidget> {
       selected: <Timeframe>{timeframeView},
       onSelectionChanged: (Set<Timeframe> newSelection) {
         setState(() {
-          // By default there is only a single segment that can be
-          // selected at one time, so its value is always the first
-          // item in the selected set.
           timeframeView = newSelection.first;
           widget.onTimeframeChanged?.call(timeframeView);
         });
