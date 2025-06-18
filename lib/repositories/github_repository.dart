@@ -14,23 +14,11 @@ class GithubRepository {
   }) : _apiService = apiService,
        _localStorageService = localStorageService;
 
-  /// Fetches trending repositories and enriches them with favorite status.
-  ///
-  /// This method orchestrates calls to the API service and local storage service.
-  /// It fetches raw repository data from GitHub, then checks the local storage
-  /// to mark which repositories are favorited by the user.
-  ///
-  /// [timeframe]: The period to query trending repositories (day, week, month).
-  /// [nextPageUrl]: Optional URL for fetching the next page of results (for pagination).
-  ///
-  /// Returns a Future containing a list of [RepositoryModel] objects,
-  /// with their `isFavorite` status correctly set.
   Future<List<RepositoryModel>> getTrendingRepositories({
     required Timeframe timeframe,
     String? nextPageUrl,
   }) async {
     try {
-      // 1. Fetch raw data from GitHub API
       final GithubResponseModel apiResponse = await _apiService
           .fetchTrendingRepositories(
             timeframe: timeframe,

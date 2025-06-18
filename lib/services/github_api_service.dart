@@ -1,4 +1,3 @@
-// lib/services/github_api_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:moblers_github_trends/models/github_response_model.dart';
@@ -41,7 +40,6 @@ class GithubApiService {
 
       return _handleResponse(response);
     } on http.ClientException catch (e) {
-      // Specific exception for network issues (e.g., no internet, host lookup failed)
       throw NetworkException('Network error: ${e.message}');
     } catch (e) {
       // Catch any other unexpected errors during the HTTP call
@@ -54,11 +52,7 @@ class GithubApiService {
     switch (response.statusCode) {
       case 200:
         final decodedData = json.decode(response.body);
-        final linkHeader = response.headers['link'];
-        return GithubResponseModel.fromJson(
-          decodedData,
-          linkHeader: linkHeader,
-        );
+        return GithubResponseModel.fromJson(decodedData);
       case 400:
       case 422: // Unprocessable Entity (often for validation errors in API)
         throw BadRequestException(

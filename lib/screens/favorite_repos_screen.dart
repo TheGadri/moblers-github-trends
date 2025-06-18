@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:moblers_github_trends/models/repository_model.dart';
 import 'package:moblers_github_trends/providers/favorite_repos_provider.dart';
 import 'package:moblers_github_trends/providers/repo_detail_provider.dart';
+import 'package:moblers_github_trends/providers/trending_repo_provider.dart';
 import 'package:moblers_github_trends/repositories/github_repository.dart';
 import 'package:moblers_github_trends/screens/repo_detail_screen.dart';
 import 'package:moblers_github_trends/screens/widgets/repository_card_widget.dart';
@@ -19,6 +20,7 @@ class _FavoriteReposScreenState extends State<FavoriteReposScreen> {
   @override
   void initState() {
     super.initState();
+
     // Ensure favorites are loaded when the screen initializes or becomes active.
     Provider.of<FavoriteReposProvider>(
       context,
@@ -28,8 +30,8 @@ class _FavoriteReposScreenState extends State<FavoriteReposScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<FavoriteReposProvider>(
-      builder: (context, favoriteProvider, child) {
+    return Consumer2<FavoriteReposProvider, TrendingReposProvider>(
+      builder: (context, favoriteProvider, trendingReposProvider, child) {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Favorite Repositories'),
@@ -40,24 +42,16 @@ class _FavoriteReposScreenState extends State<FavoriteReposScreen> {
               ),
             ],
           ),
-          body: ListView.separated(
-            itemBuilder: (context, index) {
-              return RepositoryCard(
-                onTap: () => _showRepositoryDetails(context, repository),
-                onFavoriteToggle: () {},
-                repository: repository,
-              );
-            },
-            separatorBuilder: (context, index) => SizedBox(height: 8.0),
-            itemCount: 20,
-            padding: const EdgeInsets.all(8.0),
-          ),
+          body: _buildBody(favoriteProvider, trendingReposProvider),
         );
       },
     );
   }
 
-  Widget _buildBody(FavoriteReposProvider favoriteProvider) {
+  Widget _buildBody(
+    FavoriteReposProvider favoriteProvider,
+    TrendingReposProvider trendingReposProvider,
+  ) {
     if (favoriteProvider.isLoading &&
         favoriteProvider.favoriteRepositories.isEmpty) {
       return const Center(child: CircularProgressIndicator());
@@ -86,7 +80,6 @@ class _FavoriteReposScreenState extends State<FavoriteReposScreen> {
       return const Center(
         child: Text(
           'No favorite repositories yet.\nAdd some from the Trending Repositories!',
-
           textAlign: TextAlign.center,
         ),
       );
@@ -96,8 +89,8 @@ class _FavoriteReposScreenState extends State<FavoriteReposScreen> {
         itemBuilder: (context, index) {
           final repo = favoriteProvider.favoriteRepositories[index];
           return Dismissible(
-            key: Key(repo.id.toString()), // Use a unique key for Dismissible
-            direction: DismissDirection.endToStart, // Swipe from right to left
+            key: Key(repo.id.toString()),
+            direction: DismissDirection.endToStart,
             background: Container(
               color: Colors.red,
               alignment: Alignment.centerRight,
@@ -134,15 +127,18 @@ class _FavoriteReposScreenState extends State<FavoriteReposScreen> {
               );
             },
             child: RepositoryCard(
-              repository: repo,
               onTap: () {
                 _showRepositoryDetails(context, repo).then((_) {
                   favoriteProvider.loadFavoriteRepos();
+                  trendingReposProvider.refreshFavoriteStatuses();
                 });
               },
+
               onFavoriteToggle: () {
                 favoriteProvider.removeFavoriteRepo(repo);
+                trendingReposProvider.refreshFavoriteStatuses();
               },
+              repository: repo,
             ),
           );
         },
@@ -150,7 +146,7 @@ class _FavoriteReposScreenState extends State<FavoriteReposScreen> {
     }
   }
 
-  Future _showRepositoryDetails(
+  Future<dynamic> _showRepositoryDetails(
     BuildContext context,
     RepositoryModel repository,
   ) {
@@ -159,14 +155,14 @@ class _FavoriteReposScreenState extends State<FavoriteReposScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.8,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.9,
       ),
       builder: (context) => ChangeNotifierProvider<RepoDetailProvider>(
         create: (context) => RepoDetailProvider(
           repository: repository,
           githubRepository: locator<GithubRepository>(),
         ),
-        child: RepositoryDetailModal(repository: repository),
+        child: RepositoryDetailModal(),
       ),
     );
   }

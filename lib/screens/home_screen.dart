@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:moblers_github_trends/providers/favorite_repos_provider.dart';
 import 'package:moblers_github_trends/screens/favorite_repos_screen.dart';
 import 'package:moblers_github_trends/screens/trending_repos_screen.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,6 +23,10 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
+    Provider.of<FavoriteReposProvider>(
+      context,
+      listen: false,
+    ).loadFavoriteRepos();
   }
 
   @override

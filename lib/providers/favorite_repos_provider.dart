@@ -19,15 +19,12 @@ class FavoriteReposProvider extends ChangeNotifier {
     : _githubRepository = githubRepository;
 
   /// Loads all favorite repositories from local storage.
-  ///
-  /// This method sets loading state, fetches data from the repository,
-  /// and updates the UI state accordingly.
   Future<void> loadFavoriteRepos() async {
     if (_isLoading) return; // Prevent multiple simultaneous loads
 
     _isLoading = true;
     _errorMessage = null;
-    notifyListeners(); // Notify listeners to show loading state
+    notifyListeners();
 
     try {
       _favoriteRepositories = await _githubRepository.getFavoriteRepositories();
@@ -46,8 +43,6 @@ class FavoriteReposProvider extends ChangeNotifier {
   }
 
   /// Removes a repository from the favorite list both locally and in UI.
-  ///
-  /// [repo]: The repository to be removed.
   Future<void> removeFavoriteRepo(RepositoryModel repo) async {
     try {
       await _githubRepository.removeRepositoryFromFavorites(repo);
@@ -57,10 +52,9 @@ class FavoriteReposProvider extends ChangeNotifier {
             element.name == repo.name &&
             element.owner.login == repo.owner.login,
       );
-      notifyListeners(); // Notify listeners to update the list view
+      notifyListeners();
     } on AppException catch (e) {
       debugPrint('Error removing favorite: ${e.toString()}');
-      // Potentially show a small error message to the user (e.g., a SnackBar)
     } catch (e) {
       debugPrint(
         'An unexpected error occurred while removing favorite: ${e.toString()}',
@@ -69,8 +63,6 @@ class FavoriteReposProvider extends ChangeNotifier {
   }
 
   /// Manually adds a repository to the favorites list in the UI.
-  /// This is useful if a repository is favorited from another screen
-  /// (e.g., detail screen) and you want to update this list without a full reload.
   void addFavoriteRepoToUI(RepositoryModel repo) {
     if (!_favoriteRepositories.any(
       (favRepo) =>

@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:moblers_github_trends/models/repository_model.dart';
 import 'package:moblers_github_trends/providers/repo_detail_provider.dart';
 import 'package:moblers_github_trends/screens/widgets/user_avatar_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RepositoryDetailModal extends StatelessWidget {
-  final RepositoryModel repository;
-
-  const RepositoryDetailModal({super.key, required this.repository});
+  const RepositoryDetailModal({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +14,7 @@ class RepositoryDetailModal extends StatelessWidget {
 
     return Consumer<RepoDetailProvider>(
       builder: (context, repoDetailProvider, child) {
-        final repo = repoDetailProvider.repository;
+        final repository = repoDetailProvider.repository;
 
         return Container(
           height: MediaQuery.sizeOf(context).height * 0.8,
@@ -48,28 +45,35 @@ class RepositoryDetailModal extends StatelessWidget {
                         Expanded(
                           child: Text(
                             repository.owner.login,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF24292E),
-                            ),
+                            style: textTheme.titleLarge,
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
-                    _buildDetailItem('Description', repository.description),
-                    if (repository.language != null)
-                      _buildDetailItem('Language', repository.language!),
                     _buildDetailItem(
+                      context,
+                      'Description',
+                      repository.description,
+                    ),
+                    if (repository.language != null)
+                      _buildDetailItem(
+                        context,
+                        'Language',
+                        repository.language!,
+                      ),
+                    _buildDetailItem(
+                      context,
                       'Stars',
                       _formatNumber(repository.stargazersCount),
                     ),
                     _buildDetailItem(
+                      context,
                       'Forks',
                       _formatNumber(repository.forksCount),
                     ),
                     _buildDetailItem(
+                      context,
                       'Created',
                       _formatDate(repository.createdAt),
                     ),
@@ -77,7 +81,7 @@ class RepositoryDetailModal extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () => _launchUrl('repository.htmlUrl'),
+                        onPressed: () => _launchUrl(repository.htmlUrl),
                         icon: const Icon(Icons.open_in_new),
                         label: const Text('View on GitHub'),
                         style: ElevatedButton.styleFrom(
@@ -129,20 +133,15 @@ class RepositoryDetailModal extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailItem(String label, String value) {
+  Widget _buildDetailItem(BuildContext context, String label, String value) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF24292E),
-            ),
-          ),
+          Text(label, style: textTheme.bodyMedium),
           const SizedBox(height: 4),
           Text(
             value,
@@ -167,8 +166,6 @@ class RepositoryDetailModal extends StatelessWidget {
   }
 
   void _launchUrl(String url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    }
+    await launchUrl(Uri.parse(url));
   }
 }

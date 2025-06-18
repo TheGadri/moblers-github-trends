@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moblers_github_trends/models/repository_model.dart';
+import 'package:moblers_github_trends/providers/favorite_repos_provider.dart';
 import 'package:moblers_github_trends/providers/repo_detail_provider.dart';
 import 'package:moblers_github_trends/providers/trending_repo_provider.dart';
 import 'package:moblers_github_trends/repositories/github_repository.dart';
@@ -52,8 +53,8 @@ class _TrendingReposScreenState extends State<TrendingReposScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TrendingReposProvider>(
-      builder: (context, trendingProvider, child) {
+    return Consumer2<TrendingReposProvider, FavoriteReposProvider>(
+      builder: (context, trendingProvider, favoriteReposProvider, child) {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Trending Repositories'),
@@ -75,13 +76,16 @@ class _TrendingReposScreenState extends State<TrendingReposScreen> {
               ),
             ),
           ),
-          body: _buildBody(trendingProvider),
+          body: _buildBody(trendingProvider, favoriteReposProvider),
         );
       },
     );
   }
 
-  Widget _buildBody(TrendingReposProvider trendingProvider) {
+  Widget _buildBody(
+    TrendingReposProvider trendingProvider,
+    FavoriteReposProvider favoriteReposProvider,
+  ) {
     if (trendingProvider.isLoading && trendingProvider.repositories.isEmpty) {
       // Show full-screen loader only on initial load or full refresh
       return const Center(child: CircularProgressIndicator());
@@ -139,6 +143,7 @@ class _TrendingReposScreenState extends State<TrendingReposScreen> {
             onTap: () {
               _showRepositoryDetails(context, repo).then((_) {
                 trendingProvider.refreshFavoriteStatuses();
+                favoriteReposProvider.loadFavoriteRepos();
               });
             },
             onFavoriteToggle: () {
@@ -150,7 +155,7 @@ class _TrendingReposScreenState extends State<TrendingReposScreen> {
     }
   }
 
-  Future _showRepositoryDetails(
+  Future<dynamic> _showRepositoryDetails(
     BuildContext context,
     RepositoryModel repository,
   ) {
@@ -159,14 +164,14 @@ class _TrendingReposScreenState extends State<TrendingReposScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.8,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.9,
       ),
       builder: (context) => ChangeNotifierProvider<RepoDetailProvider>(
         create: (context) => RepoDetailProvider(
           repository: repository,
           githubRepository: locator<GithubRepository>(),
         ),
-        child: RepositoryDetailModal(repository: repository),
+        child: RepositoryDetailModal(),
       ),
     );
   }

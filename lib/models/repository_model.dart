@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 final RepositoryModel repository = RepositoryModel(
   name: 'example-repo',
   description: 'An example repository for demonstration purposes.',

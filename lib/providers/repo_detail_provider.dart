@@ -22,10 +22,6 @@ class RepoDetailProvider extends ChangeNotifier {
        _githubRepository = githubRepository;
 
   /// Toggles the favorite status of the current repository.
-  ///
-  /// This method updates the favorite status in local storage via the
-  /// repository layer and then updates the local model to reflect the change,
-  /// triggering a UI rebuild.
   Future<void> toggleFavoriteStatus() async {
     if (_isTogglingFavorite) return; // Prevent multiple clicks
 
@@ -57,7 +53,6 @@ class RepoDetailProvider extends ChangeNotifier {
   }
 
   /// Refreshes the favorite status of the single repository displayed.
-  /// This is useful if a global favorite change impacts this specific repository.
   Future<void> refreshFavoriteStatus() async {
     try {
       _repository.isFavorite = await _githubRepository

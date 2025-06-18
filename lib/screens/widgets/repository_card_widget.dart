@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:moblers_github_trends/models/repository_model.dart';
 import 'package:moblers_github_trends/screens/widgets/user_avatar_widget.dart';
